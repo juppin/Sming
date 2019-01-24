@@ -8,7 +8,7 @@
 #ifndef WIRING_BITMANIPULATIONS_H_
 #define WIRING_BITMANIPULATIONS_H_
 
-#define 	_BV(bit)   (1 << (bit))
+#define 	_BV(bit)   (1 << (unsigned)(bit))
 
 #define bit(x) _BV(x)
 #define setBits(x, y) ((x) |= (y))

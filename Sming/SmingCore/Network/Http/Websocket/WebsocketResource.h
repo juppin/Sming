@@ -14,7 +14,7 @@
 #include "../HttpServerConnection.h"
 #include "../HttpResource.h"
 #include "WebsocketConnection.h"
-#include "../../Wiring/WString.h"
+#include "WString.h"
 
 class WebsocketResource : public HttpResource
 {
@@ -32,6 +32,16 @@ public:
 
 protected:
 	bool onConnect();
+
+	/** @brief Inherited classes can override this to customise connection behaviour */
+	virtual WebsocketConnection* createConnection(HttpConnectionBase* connection)
+	{
+		auto socket = new WebsocketConnection(connection, false);
+		if(socket) {
+			connection->setTimeOut(USHRT_MAX); //Disable disconnection on connection idle (no rx/tx)
+		}
+		return socket;
+	}
 
 protected:
 	WebsocketDelegate wsConnect = 0;

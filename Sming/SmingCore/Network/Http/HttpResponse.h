@@ -62,8 +62,14 @@ public:
 	HttpResponse* setAllowCrossDomainOrigin(
 		const String& controlAllowOrigin); // Access-Control-Allow-Origin for AJAX from a different domain
 
+	/*
+	 * Send file by stat, indicates whether file is compressed
+	 * A name is required in stat to get the appropriate content type
+	 */
+	bool sendFile(const FileStat& stat);
+
 	// Send file by name
-	bool sendFile(String fileName, bool allowGzipFileCheck = true);
+	bool sendFile(const String& fileName, bool allowGzipFileCheck = true);
 
 	// @deprecated
 

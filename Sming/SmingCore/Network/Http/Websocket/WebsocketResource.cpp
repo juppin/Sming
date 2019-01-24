@@ -23,7 +23,7 @@ WebsocketResource::~WebsocketResource()
 
 int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
-	WebsocketConnection* socket = new WebsocketConnection(&connection, false);
+	WebsocketConnection* socket = createConnection(&connection);
 	if(!socket) {
 		debug_e("Unable to create websocket connection");
 		return 1;
@@ -39,7 +39,6 @@ int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpReques
 		return -1;
 	}
 
-	connection.setTimeOut(USHRT_MAX); //Disable disconnection on connection idle (no rx/tx)
 	connection.userData = (void*)socket;
 	connection.setUpgradeCallback(std::bind(&WebsocketConnection::onConnected, socket));
 

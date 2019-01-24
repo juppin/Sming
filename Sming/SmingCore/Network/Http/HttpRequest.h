@@ -103,6 +103,11 @@ public:
 		return this;
 	}
 
+	String methodStr()
+	{
+		return http_method_str(method);
+	}
+
 	/**
 	 * @brief Sets a file to be sent
 	 * @param const String& formElementName the name of the element in the form

@@ -87,34 +87,40 @@ void HttpResponse::redirect(const String& location)
 	headers[HTTP_HEADER_LOCATION] = location;
 }
 
-bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/)
+bool HttpResponse::sendFile(const FileStat& stat)
 {
-	if(stream != nullptr) {
-		SYSTEM_ERROR("Stream already created");
-		delete stream;
-		stream = nullptr;
+	auto file = new FileStream(stat);
+	if(stat.compression == CompressionType::GZip)
+		headers[HTTP_HEADER_CONTENT_ENCODING] = F("gzip");
+	else if(stat.compression != CompressionType::None) {
+		debug_e("Unsupported compression type: %u", stat.compression);
 	}
 
-	String compressed = fileName + ".gz";
-	if(allowGzipFileCheck && fileExist(compressed)) {
-		debug_d("found %s", compressed.c_str());
-		stream = new FileStream(compressed);
-		headers[HTTP_HEADER_CONTENT_ENCODING] = _F("gzip");
-	} else if(fileExist(fileName)) {
+	return sendDataStream(file, ContentType::fromFullFileName(stat.name));
+}
+
+bool HttpResponse::sendFile(const String& fileName, bool allowGzipFileCheck)
+{
+	FileStat stat;
+
+	if(allowGzipFileCheck) {
+		String fnCompressed = fileName + _F(".gz");
+		if(fileStats(fnCompressed, &stat) >= 0) {
+			debug_d("found %s", stat.name);
+			stat.compression = CompressionType::GZip;
+			stat.name = NameBuffer(fnCompressed.begin(), fnCompressed.length(), fnCompressed.length());
+			return sendFile(stat);
+		}
+	}
+
+	if(fileStats(fileName, &stat) >= 0) {
 		debug_d("found %s", fileName.c_str());
-		stream = new FileStream(fileName);
-	} else {
-		code = HTTP_STATUS_NOT_FOUND;
-		return false;
+		stat.name = NameBuffer((char*)fileName.c_str(), fileName.length(), fileName.length());
+		return sendFile(stat);
 	}
 
-	if(!headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
-		String mime = ContentType::fromFullFileName(fileName);
-		if(mime)
-			setContentType(mime);
-	}
-
-	return true;
+	code = HTTP_STATUS_NOT_FOUND;
+	return false;
 }
 
 bool HttpResponse::sendTemplate(TemplateStream* newTemplateInstance)

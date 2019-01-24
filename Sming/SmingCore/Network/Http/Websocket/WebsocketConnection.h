@@ -123,7 +123,7 @@ public:
 	// @deprecated
 	bool operator==(const WebsocketConnection& rhs) const;
 
-	WebsocketList& getActiveWebsockets();
+	static WebsocketList& getActiveWebsockets();
 	// @end deprecated
 
 	/**

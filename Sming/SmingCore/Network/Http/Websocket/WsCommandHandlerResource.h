@@ -11,10 +11,10 @@
 #ifndef _SMING_SMINGCORE_NETWORK_WEBSOCKET_RESOURCE_H_
 #define _SMING_SMINGCORE_NETWORK_WEBSOCKET_RESOURCE_H_
 
-#include "../HttpResource.h"
-#include "WebsocketConnection.h"
-#include "../../Wiring/WString.h"
-#include "../../Services/CommandProcessing/CommandProcessingIncludes.h" // TODO: ....
+#include "HttpResource.h"
+#include "WebSocketConnection.h"
+#include "WString.h"
+#include "../Services/CommandProcessing/CommandProcessingIncludes.h" // TODO: ....?
 
 class WsCommandHandlerResource : protected WebsocketResource
 {
@@ -33,7 +33,7 @@ protected:
 		}
 
 		WebsocketConnection* socket = (WebsocketConnection*)connection.userData;
-		if(socket != NULL) {
+		if(socket != nullptr) {
 			socket->setMessageHandler()
 
 			// create new command handler
