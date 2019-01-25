@@ -74,8 +74,9 @@ command_connection_t WebsocketManager::findConnection(uint32_t cid)
 	WebsocketList& list = WSCommandConnection::getActiveWebsockets();
 	for(unsigned i = 0; i < list.count(); ++i) {
 		auto cc = WSCommandConnection::fromSocket(list[i]);
-		if(cc->cid() == cid)
+		if(cc->cid() == cid) {
 			return cc;
+		}
 	}
 	return nullptr;
 }
@@ -95,8 +96,9 @@ void WebsocketManager::loginComplete(command_connection_t connection, JsonObject
 	 * It may not exist (if it's old) but if so we close it now to preserve resources.
 	 */
 	auto cc = findConnection(json[ATTR_CID].asString());
-	if(cc && cc != connection)
+	if(cc && cc != connection) {
 		delete cc;
+	}
 
 	// By return we provide this connection's CID, which the client will store as a cookie
 	json[ATTR_CID] = String(connection->cid(), 16);
@@ -105,19 +107,21 @@ void WebsocketManager::loginComplete(command_connection_t connection, JsonObject
 	 * Client gets a list of authorised methods.
 	 */
 	JsonArray& methods = json.createNestedArray(ATTR_METHODS);
-	for(unsigned i = 0; i < m_handlers.count(); ++i) {
-		ICommandHandler* handler = m_handlers[i];
-		if(connection->access() >= handler->minAccess())
+	for(unsigned i = 0; i < handlers.count(); ++i) {
+		ICommandHandler* handler = handlers[i];
+		if(connection->access() >= handler->minAccess()) {
 			methods.add(handler->getMethod());
+		}
 	}
 }
 
 ICommandHandler* WebsocketManager::findHandler(const char* method)
 {
-	for(unsigned i = 0; i < m_handlers.count(); ++i) {
-		ICommandHandler* handler = m_handlers[i];
-		if(handler->getMethod() == method)
+	for(unsigned i = 0; i < handlers.count(); ++i) {
+		ICommandHandler* handler = handlers[i];
+		if(handler->getMethod() == method) {
 			return handler;
+		}
 	}
 
 	return nullptr;
@@ -131,13 +135,15 @@ void WebsocketManager::handleMessage(command_connection_t connection, JsonObject
 	if(!handler) {
 		setError(json);
 		debug_w("Unknown method: '%s'", method);
-	} else if(connection->access() < handler->minAccess())
+	} else if(connection->access() < handler->minAccess()) {
 		setError(json, ioe_access_denied);
-	else
+	} else {
 		handler->handleMessage(connection, json);
+	}
 
-	if(!json.containsKey(DONT_RESPOND))
+	if(!json.containsKey(DONT_RESPOND)) {
 		connection->send(json);
+	}
 }
 
 void WebsocketManager::connected(WebsocketConnection& socket)
@@ -157,8 +163,9 @@ void WebsocketManager::connected(WebsocketConnection& socket)
 	 * then close it. Can we do that using TCP timeouts?
 	 */
 	WebsocketList& list = socket.getActiveWebsockets();
-	while(list.count() >= MAX_WEBSOCKET_COUNT)
+	while(list.count() >= MAX_WEBSOCKET_COUNT) {
 		list[0]->close();
+	}
 }
 
 void WebsocketManager::disconnected(WebsocketConnection& socket)
@@ -205,9 +212,11 @@ void WebsocketManager::binaryReceived(WebsocketConnection& socket, uint8_t* data
 {
 	auto cc = WSCommandConnection::fromSocket(&socket);
 
-	for(unsigned i = 0; i < m_handlers.count(); ++i)
-		if(m_handlers[i]->handleData(cc, data, size))
+	for(unsigned i = 0; i < handlers.count(); ++i) {
+		if(handlers[i]->handleData(cc, data, size)) {
 			return;
+		}
+	}
 
 	debug_w("binaryReceived(%u) - unhandled", size);
 }

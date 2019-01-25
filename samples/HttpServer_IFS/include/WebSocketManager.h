@@ -26,13 +26,13 @@ public:
 
 	void registerHandler(ICommandHandler& handler)
 	{
-		if(!m_handlers.contains(&handler))
-			m_handlers.add(&handler);
+		if(!handlers.contains(&handler))
+			handlers.add(&handler);
 	}
 
 	void unregisterHandler(ICommandHandler& handler)
 	{
-		m_handlers.removeElement(&handler);
+		handlers.removeElement(&handler);
 	}
 
 	void loginComplete(command_connection_t connection, JsonObject& json);
@@ -51,7 +51,7 @@ private:
 	void handleMessage(command_connection_t connection, JsonObject& json);
 
 private:
-	Vector<ICommandHandler*> m_handlers;
+	Vector<ICommandHandler*> handlers;
 	ICommandHandler* findHandler(const char* method);
 };
 

@@ -19,33 +19,34 @@ bool JsonConfigFile::load(const String& filename)
 	ElapseTimer elapse;
 #endif
 
-	_content = fileGetContent(filename);
+	content = fileGetContent(filename);
 #if DEBUG_VERBOSE_LEVEL == DBG
 	uint32_t tload = elapse.elapsed();
 	elapse.start();
 #endif
 	// Passing a non-const buffer reference means JSON will reference existing data, not duplicate it
-	_root = &_buffer.parseObject(_content.begin());
-	if(_root->success()) {
+	rootObject = &buffer.parseObject(content.begin());
+	if(rootObject->success()) {
 #if DEBUG_VERBOSE_LEVEL == DBG
-		debug_d("Loaded '%s', %u items, %u bytes, load %u us, parse %u us", filename.c_str(), _root->size(),
-				_buffer.size(), tload, elapse.elapsed());
+		debug_d("Loaded '%s', %u items, %u bytes, load %u us, parse %u us", filename.c_str(), root->size(),
+				buffer.size(), tload, elapse.elapsed());
 #endif
 		return true;
 	}
 
 	debug_e("Failed to load '%s'", filename.c_str());
-	_root = &_buffer.createObject();
+	rootObject = &buffer.createObject();
 	return false;
 }
 
 bool JsonConfigFile::save(const String& filename)
 {
 	FileStream f;
-	if(!f.open(filename, eFO_CreateNewAlways))
+	if(!f.open(filename, eFO_CreateNewAlways)) {
 		return false;
+	}
 
-	_root->printTo(f);
+	rootObject->printTo(f);
 	int res = f.getLastError();
 	f.close();
 

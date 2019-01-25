@@ -118,7 +118,10 @@ public:
 
 	void begin();
 
-	void onStatusChange(network_callback_t callback);
+	void onStatusChange(network_callback_t callback)
+	{
+		statusChangeCallback = callback;
+	}
 
 	void scan(command_connection_t connection, JsonObject& json);
 
@@ -128,7 +131,7 @@ public:
 
 	uint16_t webServerPort() const
 	{
-		return WifiAccessPoint.isEnabled() ? 80 : m_serverPort;
+		return WifiAccessPoint.isEnabled() ? 80 : serverPort;
 	}
 
 	/* CCommandHandler */
@@ -159,25 +162,26 @@ private:
 
 	void statusChanged(network_change_t nwc)
 	{
-		if(m_onStatusChange)
-			m_onStatusChange(nwc);
+		if(statusChangeCallback) {
+			statusChangeCallback(nwc);
+		}
 	}
 
 private:
 	// Only need this in AP mode so create it dynamically
-	DNSServer* m_dnsServer = nullptr;
+	DNSServer* dnsServer = nullptr;
 	// Persistent data for MDNS - libraries don't reliably keep copies
-	String m_hostname;
+	String hostName;
 	//
-	uint16_t m_serverPort = 80;
+	uint16_t serverPort = 80;
 	// The client connection being used to reconfigure network
-	command_connection_t m_configConnection = nullptr;
+	command_connection_t configConnection = nullptr;
 	//
-	network_callback_t m_onStatusChange = nullptr;
+	network_callback_t statusChangeCallback = nullptr;
 	// Network scan
-	command_connection_t m_scanConnection = nullptr;
+	command_connection_t scanConnection = nullptr;
 	// For keeping system clock accurate
-	NtpClient m_ntpClient;
+	NtpClient ntpClient;
 };
 
 extern NetworkManager networkManager;

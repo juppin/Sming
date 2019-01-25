@@ -36,7 +36,7 @@ class TimeManager : public Timezone
 public:
 	void onChange(TimeChangeCallback callback)
 	{
-		m_onChange = callback;
+		changeCallback = callback;
 	}
 
 	void configure(const JsonObject& config);
@@ -44,7 +44,7 @@ public:
 
 	bool timeValid()
 	{
-		return m_timeValid;
+		return timeIsValid;
 	}
 
 	time_t getTime(TimeType tt, int offset_secs);
@@ -63,11 +63,11 @@ public:
 
 private:
 	// RTC is volatile and requires setting at reset
-	bool m_timeValid = false;
+	bool timeIsValid = false;
 	//
-	SolarCalculator m_solarCalc;
+	SolarCalculator solarCalc;
 	//
-	TimeChangeCallback m_onChange = nullptr;
+	TimeChangeCallback changeCallback = nullptr;
 };
 
 extern TimeManager timeManager;

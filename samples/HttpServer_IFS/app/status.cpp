@@ -7,14 +7,17 @@
 
 #include "status.h"
 
-static DEFINE_FSTR(ATTR_STATUS, "status") static DEFINE_FSTR(STATUS_SUCCESS, "success") static DEFINE_FSTR(
-	STATUS_PENDING, "pending") static DEFINE_FSTR(STATUS_ERROR, "error") static DEFINE_FSTR(STATUS_UNKNOWN, "unknown")
+static DEFINE_FSTR(ATTR_STATUS, "status");
+static DEFINE_FSTR(STATUS_SUCCESS, "success");
+static DEFINE_FSTR(STATUS_PENDING, "pending");
+static DEFINE_FSTR(STATUS_ERROR, "error");
+static DEFINE_FSTR(STATUS_UNKNOWN, "unknown");
 
-	// Json error node
-	static DEFINE_FSTR(ATTR_ERROR, "error") DEFINE_FSTR(ATTR_CODE, "code")
-		DEFINE_FSTR(ATTR_TEXT, "text") static DEFINE_FSTR(ATTR_ARG, "arg")
+// Json error node
+static DEFINE_FSTR(ATTR_ERROR, "error") DEFINE_FSTR(ATTR_CODE, "code");
+DEFINE_FSTR(ATTR_TEXT, "text") static DEFINE_FSTR(ATTR_ARG, "arg");
 
-			String statusToStr(request_status_t status)
+String statusToStr(request_status_t status)
 {
 	switch(status) {
 	case status_success:
@@ -38,10 +41,12 @@ void setError(JsonObject& json, int code, const String& text, const String& arg)
 	setStatus(json, status_error);
 	JsonObject& err = json.createNestedObject(String(ATTR_ERROR));
 	err[ATTR_CODE] = code;
-	if(text)
+	if(text) {
 		err[ATTR_TEXT] = text;
-	if(arg)
+	}
+	if(arg) {
 		err[ATTR_ARG] = arg;
+	}
 }
 
 #define XX(_tag, _value) static DEFINE_FSTR(statusstr_##_tag, #_tag);

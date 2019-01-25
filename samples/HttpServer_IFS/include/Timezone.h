@@ -50,7 +50,7 @@ public:
 
 	const char* timeTag(bool isDst)
 	{
-		return isDst ? m_dst.tag : m_std.tag;
+		return isDst ? dstRule.tag : stdRule.tag;
 	}
 
 	const char* utcTimeTag(time_t utc)
@@ -69,17 +69,17 @@ private:
 
 private:
 	// rule for start of dst or summer time for any year
-	TimeChangeRule m_dst = {"DST", First, Sun, Jan, 1, 0};
+	TimeChangeRule dstRule = {"DST", First, Sun, Jan, 1, 0};
 	// rule for start of standard time for any year
-	TimeChangeRule m_std = {"UTC", First, Sun, Jan, 1, 0};
+	TimeChangeRule stdRule = {"UTC", First, Sun, Jan, 1, 0};
 	// dst start for given/current year, given in UTC
-	time_t m_dstUTC = 0;
+	time_t dstStartUTC = 0;
 	// std time start for given/current year, given in UTC
-	time_t m_stdUTC = 0;
+	time_t stdStartUTC = 0;
 	// dst start for given/current year, given in local time
-	time_t m_dstLoc = 0;
+	time_t dstStartLoc = 0;
 	// std time start for given/current year, given in local time
-	time_t m_stdLoc = 0;
+	time_t stdStartLoc = 0;
 };
 
 #endif // __DAYLIGHT_H

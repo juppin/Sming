@@ -126,10 +126,12 @@ float geomMeanLongSun(float t)
 	float L0 = 280.46646 + t * (36000.76983 + t * 0.0003032);
 
 	// Get value between 0 and 360 degrees
-	while(L0 > 360)
+	while(L0 > 360) {
 		L0 -= 360;
-	while(L0 < 0)
+	}
+	while(L0 < 0) {
 		L0 += 360;
+	}
 
 	return L0;
 }
@@ -208,14 +210,15 @@ float sunRiseSetUTC(bool isRise, float jday, float latitude, float longitude)
 int SolarCalculator::sunRiseSet(bool isRise, int y, int m, int d)
 {
 	float jday = jDay(y, m, d);
-	float timeUTC = sunRiseSetUTC(isRise, jday, m_ref.latitude, m_ref.longitude);
+	float timeUTC = sunRiseSetUTC(isRise, jday, ref.latitude, ref.longitude);
 
 	// Advance the calculated time by a fraction of itself; why?
-	float newTimeUTC = sunRiseSetUTC(isRise, jday + timeUTC / 1440.0, m_ref.latitude, m_ref.longitude);
+	float newTimeUTC = sunRiseSetUTC(isRise, jday + timeUTC / 1440.0, ref.latitude, ref.longitude);
 
 	// Check there is a sunrise or sunset, e.g. in the (ant)arctic.
-	if(std::isnan(newTimeUTC))
+	if(std::isnan(newTimeUTC)) {
 		return -1;
+	}
 
 	//  printf("UTC = %f\n", newTimeUTC);
 

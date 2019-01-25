@@ -37,7 +37,7 @@ static bool findTimechangeRule(const String& tag, TimeChangeRule& rule)
 
 void TimeManager::configure(const JsonObject& config)
 {
-	SolarRef& ref = m_solarCalc.ref();
+	SolarRef& ref = solarCalc.getRef();
 	CONFIG_READ(config, ATTR_LATITUDE, ref.latitude);
 	CONFIG_READ(config, ATTR_LONGITUDE, ref.longitude);
 
@@ -55,13 +55,13 @@ void TimeManager::update(time_t timeUTC)
 	debug_i("TimeManager::update(%s), current: %s", timeStr(tNew).c_str(), timeStr(tCur).c_str());
 
 	// Update system clock if it's drifted sufficiently
-	if(!m_timeValid || (abs(tCur - tNew) > MAX_CLOCK_DRIFT)) {
+	if(!timeIsValid || (abs(tCur - tNew) > MAX_CLOCK_DRIFT)) {
 		// Time zone difference also accounts for DST
 		int diff = tNew - timeUTC;
 		debug_i("TZ diff = %d secs", diff);
 		SystemClock.setTimeZoneOffset(diff);
 		SystemClock.setTime(tNew, eTZ_Local);
-		m_timeValid = true;
+		timeIsValid = true;
 
 #if DEBUG_BUILD
 
@@ -71,8 +71,9 @@ void TimeManager::update(time_t timeUTC)
 
 #endif
 
-		if(m_onChange)
-			m_onChange(tNew - tCur);
+		if(changeCallback) {
+			changeCallback(tNew - tCur);
+		}
 	}
 }
 
@@ -88,8 +89,9 @@ time_t TimeManager::getTime(TimeType timetype, int offset_secs)
 {
 	time_t tNow = SystemClock.now(eTZ_Local);
 
-	if(timetype == time_now)
+	if(timetype == time_now) {
 		return tNow + offset_secs;
+	}
 
 	DateTime dt(tNow);
 	dt.Hour = 0;
@@ -99,8 +101,9 @@ time_t TimeManager::getTime(TimeType timetype, int offset_secs)
 	if(timetype == time_absolute) {
 		time_t t = dt + offset_secs;
 		// If time has already passed, then make it tomorrow.
-		if(tNow > t)
+		if(tNow > t) {
 			t += SECS_PER_DAY;
+		}
 		return t;
 	}
 
@@ -110,13 +113,14 @@ time_t TimeManager::getTime(TimeType timetype, int offset_secs)
 		 * returns the time from midnight in UTC for that day. We therefore need to adjust this
 		 * to account for timezone and daylight savings.
 		 */
-		offset_secs += SECS_PER_MIN * m_solarCalc.sunRiseSet(timetype == time_sunrise, dt.Year, dt.Month + 1, dt.Day);
+		offset_secs += SECS_PER_MIN * solarCalc.sunRiseSet(timetype == time_sunrise, dt.Year, dt.Month + 1, dt.Day);
 		//    return toLocal(t + SECS_PER_MIN * m_solarCalc.sunrise(dt.Year, dt.Month + 1, dt.Day));
 
 		time_t t = toLocal(dt + offset_secs);
 		// If time has already passed, then make it tomorrow
-		if(t < tNow)
+		if(t < tNow) {
 			t = toLocal(dt + offset_secs + SECS_PER_DAY);
+		}
 		return t;
 	}
 

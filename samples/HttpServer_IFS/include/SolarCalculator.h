@@ -35,18 +35,18 @@ public:
 	{
 	}
 
-	SolarCalculator(const SolarRef& ref) : m_ref(ref)
+	SolarCalculator(const SolarRef& ref) : ref(ref)
 	{
 	}
 
-	SolarRef& ref()
+	SolarRef& getRef()
 	{
-		return m_ref;
+		return ref;
 	}
 
 	void setRef(const SolarRef& ref)
 	{
-		m_ref = ref;
+		this->ref = ref;
 	}
 
 	int sunRiseSet(bool isRise, int y, int m, int d);
@@ -68,7 +68,7 @@ private:
 	 *
 	 * Royal Observatory, Greenwich, seems an appropriate default setting
 	 */
-	SolarRef m_ref = {51.4769, 0.0005};
+	SolarRef ref = {51.4769, 0.0005};
 };
 
 #endif // __SOLAR_CALCULATOR_H

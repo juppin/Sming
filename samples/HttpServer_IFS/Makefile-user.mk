@@ -36,3 +36,7 @@ EXTRA_INCDIR = include $(SMING_HOME)/third-party/IFS/src
 ## SPIFFS options
 DISABLE_SPIFFS = 1
 
+all: fsbuild
+
+fsbuild:
+	python "$(SMING_HOME)/third-party/IFS/fsbuild/fsbuild.py"

@@ -42,7 +42,7 @@ public:
 	void handleMessage(command_connection_t connection, JsonObject& json);
 
 private:
-	HttpServer* m_server = nullptr;
+	HttpServer* server = nullptr;
 
 private:
 	int requestComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response);

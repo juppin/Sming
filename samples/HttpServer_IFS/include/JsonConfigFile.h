@@ -21,17 +21,17 @@ public:
 
 	operator JsonObject&()
 	{
-		return *_root;
+		return *rootObject;
 	}
 
 	JsonObject& root()
 	{
-		return *_root;
+		return *rootObject;
 	}
 
 	__forceinline JsonObjectSubscript<const String&> operator[](const String& key)
 	{
-		return _root->operator[](key);
+		return rootObject->operator[](key);
 	}
 
 protected:
@@ -46,9 +46,9 @@ protected:
 	}
 
 private:
-	String _content;		   ///< File content
-	DynamicJsonBuffer _buffer; ///< References m_content
-	JsonObject* _root = nullptr;
+	String content;		   ///< File content
+	DynamicJsonBuffer buffer; ///< References m_content
+	JsonObject* rootObject = nullptr;
 };
 
 // Read a value from CConfigFile or another JsonObject, but only if it exists

@@ -20,7 +20,7 @@ class AuthManager : public ICommandHandler
 public:
 	void onLoginComplete(login_callback_t callback)
 	{
-		m_onLoginComplete = callback;
+		loginCompleteCallback = callback;
 	}
 
 	/* CCommandHandler */
@@ -39,7 +39,7 @@ private:
 	void login(command_connection_t connection, JsonObject& json);
 
 private:
-	login_callback_t m_onLoginComplete;
+	login_callback_t loginCompleteCallback;
 };
 
 #endif // __AUTH_MANAGER_H

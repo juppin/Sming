@@ -29,7 +29,7 @@ DECLARE_FSTR(ATTR_ACCESS)
 class FileUpload
 {
 public:
-	FileUpload(FileManager& manager, command_connection_t connection) : m_manager(manager), m_connection(connection)
+	FileUpload(FileManager& manager, command_connection_t connection) : manager(manager), connection(connection)
 	{
 	}
 
@@ -42,12 +42,12 @@ public:
 
 	const String& filename() const
 	{
-		return m_filename;
+		return fileName;
 	}
 
-	int error() const
+	int getError() const
 	{
-		return m_error;
+		return error;
 	}
 
 	bool handleData(command_connection_t connection, uint8_t* data, size_t size);
@@ -57,16 +57,16 @@ private:
 	void endUpload();
 
 private:
-	FileManager& m_manager;
-	String m_filename = nullptr;
-	file_t m_file = -1;
-	uint32_t m_size = 0;
-	command_connection_t m_connection = nullptr;
-	uint32_t m_written = 0;
+	FileManager& manager;
+	String fileName = nullptr;
+	file_t fileHandle = -1;
+	uint32_t fileSize = 0;
+	command_connection_t connection = nullptr;
+	uint32_t bytesWritten = 0;
 	// SPIFFS error
-	int m_error = ERROR_TIMEOUT;
+	int error = ERROR_TIMEOUT;
 	// Handles timeout condition
-	SimpleTimer m_timer;
+	SimpleTimer timer;
 };
 
 /** @brief  Callback function for file upload completion
@@ -90,19 +90,19 @@ public:
 
 	UserRole minAccess() const
 	{
-		return UserRole::Admin;
+		return UserRole::User;
 	}
 
 	void onUpload(file_upload_callback_t callback)
 	{
-		m_callback = callback;
+		this->callback = callback;
 	}
 
 	void handleMessage(command_connection_t connection, JsonObject& json);
 
 	bool handleData(command_connection_t connection, uint8_t* data, size_t size)
 	{
-		return m_upload ? m_upload->handleData(connection, data, size) : false;
+		return upload ? upload->handleData(connection, data, size) : false;
 	}
 
 private:
@@ -111,8 +111,8 @@ private:
 	void endUpload();
 
 private:
-	FileUpload* m_upload;
-	file_upload_callback_t m_callback;
+	FileUpload* upload;
+	file_upload_callback_t callback;
 };
 
 #endif // __FILE_MANAGER_H

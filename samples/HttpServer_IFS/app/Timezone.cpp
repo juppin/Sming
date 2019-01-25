@@ -22,13 +22,15 @@ time_t Timezone::toLocal(time_t utc, const TimeChangeRule** p_tcr)
 {
 	// recalculate the time change points if needed
 	int y = year(utc);
-	if(y != year(m_dstUTC))
+	if(y != year(dstStartUTC)) {
 		calcTimeChanges(y);
+	}
 
-	const TimeChangeRule& tcr = utcIsDST(utc) ? m_dst : m_std;
+	const TimeChangeRule& tcr = utcIsDST(utc) ? dstRule : stdRule;
 
-	if(p_tcr)
+	if(p_tcr) {
 		*p_tcr = &tcr;
+	}
 
 	return utc + (tcr.offset * SECS_PER_MIN);
 }
@@ -62,10 +64,11 @@ time_t Timezone::toUTC(time_t local)
 {
 	// recalculate the time change points if needed
 	int y = year(local);
-	if(y != year(m_dstLoc))
+	if(y != year(dstStartLoc)) {
 		calcTimeChanges(y);
+	}
 
-	return local - (locIsDST(local) ? m_dst.offset : m_std.offset) * SECS_PER_MIN;
+	return local - (locIsDST(local) ? dstRule.offset : stdRule.offset) * SECS_PER_MIN;
 }
 
 /*
@@ -75,19 +78,22 @@ bool Timezone::utcIsDST(time_t utc)
 {
 	// recalculate the time change points if needed
 	int y = year(utc);
-	if(y != year(m_dstUTC))
+	if(y != year(dstStartUTC)) {
 		calcTimeChanges(y);
+	}
 
 	// daylight time not observed in this tz
-	if(m_stdUTC == m_dstUTC)
+	if(stdStartUTC == dstStartUTC) {
 		return false;
+	}
 
 	// northern hemisphere
-	if(m_stdUTC > m_dstUTC)
-		return (utc >= m_dstUTC) && (utc < m_stdUTC);
+	if(stdStartUTC > dstStartUTC) {
+		return (utc >= dstStartUTC) && (utc < stdStartUTC);
+	}
 
 	// southern hemisphere
-	return (utc >= m_dstUTC) || (utc < m_stdUTC);
+	return (utc >= dstStartUTC) || (utc < stdStartUTC);
 }
 
 /*
@@ -98,19 +104,22 @@ bool Timezone::locIsDST(time_t local)
 {
 	// recalculate the time change points if needed
 	int y = year(local);
-	if(y != year(m_dstLoc))
+	if(y != year(dstStartLoc)) {
 		calcTimeChanges(y);
+	}
 
 	// daylight time not observed in this tz
-	if(m_stdUTC == m_dstUTC)
+	if(stdStartUTC == dstStartUTC) {
 		return false;
+	}
 
 	// northern hemisphere
-	if(m_stdLoc > m_dstLoc)
-		return (local >= m_dstLoc && local < m_stdLoc);
+	if(stdStartLoc > dstStartLoc) {
+		return (local >= dstStartLoc && local < stdStartLoc);
+	}
 
 	// southern hemisphere
-	return (local >= m_dstLoc) || (local < m_stdLoc);
+	return (local >= dstStartLoc) || (local < stdStartLoc);
 }
 
 /*
@@ -119,10 +128,10 @@ bool Timezone::locIsDST(time_t local)
  */
 void Timezone::calcTimeChanges(int yr)
 {
-	m_dstLoc = toTime_t(m_dst, yr);
-	m_stdLoc = toTime_t(m_std, yr);
-	m_dstUTC = m_dstLoc - m_std.offset * SECS_PER_MIN;
-	m_stdUTC = m_stdLoc - m_dst.offset * SECS_PER_MIN;
+	dstStartLoc = toTime_t(dstRule, yr);
+	stdStartLoc = toTime_t(stdRule, yr);
+	dstStartUTC = dstStartLoc - stdRule.offset * SECS_PER_MIN;
+	stdStartUTC = stdStartLoc - dstRule.offset * SECS_PER_MIN;
 }
 
 /*
@@ -158,19 +167,20 @@ time_t Timezone::toTime_t(TimeChangeRule r, int yr)
 	// add offset from the first of the month to r.dow, and offset for the given week
 	t += ((r.dow - dayOfWeek(t) + 7) % 7 + (w - 1) * 7) * SECS_PER_DAY;
 	// back up a week if this is a "Last" rule
-	if(r.week == 0)
+	if(r.week == 0) {
 		t -= 7 * SECS_PER_DAY;
+	}
 
 	return t;
 }
 
 void Timezone::init(const TimeChangeRule& dstStart, const TimeChangeRule& stdStart)
 {
-	m_dst = dstStart;
-	m_std = stdStart;
+	dstRule = dstStart;
+	stdRule = stdStart;
 	// force calcTimeChanges() at next conversion call
-	m_dstUTC = 0;
-	m_stdUTC = 0;
-	m_dstLoc = 0;
-	m_stdLoc = 0;
+	dstStartUTC = 0;
+	stdStartUTC = 0;
+	dstStartLoc = 0;
+	stdStartLoc = 0;
 }
