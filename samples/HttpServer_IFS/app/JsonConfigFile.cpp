@@ -28,7 +28,7 @@ bool JsonConfigFile::load(const String& filename)
 	rootObject = &buffer.parseObject(content.begin());
 	if(rootObject->success()) {
 #if DEBUG_VERBOSE_LEVEL == DBG
-		debug_d("Loaded '%s', %u items, %u bytes, load %u us, parse %u us", filename.c_str(), root->size(),
+		debug_d("Loaded '%s', %u items, %u bytes, load %u us, parse %u us", filename.c_str(), rootObject->size(),
 				buffer.size(), tload, elapse.elapsed());
 #endif
 		return true;

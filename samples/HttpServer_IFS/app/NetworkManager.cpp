@@ -469,8 +469,7 @@ void NetworkManager::scan(command_connection_t connection, JsonObject& json)
 	setPending(json);
 }
 
-NetworkManager::NetworkManager()
-	: ntpClient((NtpTimeResultDelegate)[](NtpClient & client, time_t timestamp) { timeManager.update(timestamp); })
+NetworkManager::NetworkManager() : ntpClient(NtpTimeResultDelegate(&NetworkManager::onNtpReceive, this))
 {
 }
 

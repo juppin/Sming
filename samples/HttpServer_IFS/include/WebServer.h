@@ -12,7 +12,6 @@
 #include "CommandHandler.h"
 #include <functional>
 
-
 DECLARE_FSTR(FILE_INDEX_HTML)
 
 /** @brief  Callback function for web server access authorisation
@@ -23,7 +22,7 @@ DECLARE_FSTR(FILE_INDEX_HTML)
  */
 typedef std::function<bool(const String& filename, UserRole access)> file_access_callback_t;
 
-class WebServer: public ICommandHandler
+class WebServer : public ICommandHandler
 {
 public:
 	bool start();

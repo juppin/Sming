@@ -46,7 +46,7 @@ protected:
 	}
 
 private:
-	String content;		   ///< File content
+	String content;			  ///< File content
 	DynamicJsonBuffer buffer; ///< References m_content
 	JsonObject* rootObject = nullptr;
 };

@@ -186,7 +186,6 @@ EXTRA_INCDIR += third-party/rboot third-party/rboot/appcode
 THIRD_PARTY_DATA += third-party/spiffs/makefile
 MODULES		     += third-party/spiffs/src
 EXTRA_INCDIR     += third-party/spiffs/src
-CFLAGS           += -DSPIFFS_OBJ_META_LEN=16
 
 # => http-parser
 THIRD_PARTY_DATA += third-party/http-parser/Makefile
@@ -204,8 +203,8 @@ EXTRA_INCDIR     += third-party/mqtt-codec/src
 CUSTOM_TARGETS   += $(USER_LIBDIR)/libmqttc.a
 
 # => IFS
-THIRD_PARTY_DATA = third-party/IFS/Makefile
-MODULES		     += third-party/IFS/src/IFS
+THIRD_PARTY_DATA += third-party/IFS/Makefile
+MODULES          += third-party/IFS/src/IFS
 EXTRA_INCDIR     += third-party/IFS/src
 
 # => LOCALE

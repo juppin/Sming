@@ -4,7 +4,7 @@
 
 ## Add your source directories here separated by space
 MODULES = app app/ESP8266LLMNR
-EXTRA_INCDIR = include $(SMING_HOME)/third-party/IFS/src
+EXTRA_INCDIR = include
 
 ## ESP_HOME sets the path where ESP tools and SDK are located.
 ## Windows:
@@ -36,7 +36,22 @@ EXTRA_INCDIR = include $(SMING_HOME)/third-party/IFS/src
 ## SPIFFS options
 DISABLE_SPIFFS = 1
 
-all: fsbuild
+## Firmware filesystem additional build steps
 
-fsbuild:
-	python "$(SMING_HOME)/third-party/IFS/fsbuild/fsbuild.py"
+FWFILES=out\fwfiles.bin
+
+all: fsbuild 
+
+clean: fsclean
+
+fsbuild: out $(FWFILES)
+
+out:
+	$(Q) mkdir out
+
+fsclean:
+	$(Q) rm -rf $(FWFILES)
+
+$(FWFILES):
+	$(Q) python "$(SMING_HOME)/third-party/IFS/fsbuild/fsbuild.py"
+	touch app/application.cpp

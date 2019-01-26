@@ -12,7 +12,7 @@
 #define _SMING_SMINGCORE_NETWORK_WEBSOCKET_RESOURCE_H_
 
 #include "HttpResource.h"
-#include "WebSocketConnection.h"
+#include "WebsocketConnection.h"
 #include "WString.h"
 #include "../Services/CommandProcessing/CommandProcessingIncludes.h" // TODO: ....?
 

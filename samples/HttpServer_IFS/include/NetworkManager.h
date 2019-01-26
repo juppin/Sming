@@ -10,7 +10,7 @@
 
 #include "CommandHandler.h"
 #include "Network/DNSServer.h"
-#include "Network/NTPClient.h"
+#include "Network/NtpClient.h"
 #include "Platform/AccessPoint.h"
 #include "Platform/Station.h"
 #include "WString.h"
@@ -97,7 +97,9 @@ public:
 
 	bool simplePair()
 	{
-		return m_info->simple_pair != 0;
+		// SDK V1.5 does not have simple_pair member
+		//		return m_info->simple_pair != 0;
+		return false;
 	}
 
 	bool next()

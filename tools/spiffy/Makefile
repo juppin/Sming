@@ -6,7 +6,7 @@ HOST_CC ?= gcc
 HOST_LD ?= gcc
 
 INCDIR := -I$(SMING_HOME)/Services/SpifFS -I$(SMING_HOME)/third-party/spiffs/src
-CFLAGS := -O2 -Wall -Wno-unused-value -DSPIFFS_OBJ_META_LEN=16
+CFLAGS := -O2 -Wall -Wno-unused-value
 
 ifeq ("$(V)","1")
 Q :=

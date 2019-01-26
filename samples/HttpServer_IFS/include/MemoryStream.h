@@ -13,14 +13,12 @@
 class MemoryStream
 {
 public:
-	MemoryStream(size_t size) :
-		m_data(nullptr), m_size(size), m_pos(0), m_owned(false)
+	MemoryStream(size_t size) : m_data(nullptr), m_size(size), m_pos(0), m_owned(false)
 	{
 		init(size);
 	}
 
-	MemoryStream(uint8_t* data, size_t size) :
-		m_data(data), m_size(size), m_pos(0), m_owned(false)
+	MemoryStream(uint8_t* data, size_t size) : m_data(data), m_size(size), m_pos(0), m_owned(false)
 	{
 	}
 
@@ -39,7 +37,7 @@ public:
 
 	void free()
 	{
-		if (m_owned && m_data) {
+		if(m_owned && m_data) {
 			::free(m_data);
 			m_owned = false;
 			m_data = nullptr;
@@ -50,7 +48,7 @@ public:
 
 	int read()
 	{
-		return (m_pos < m_size) ? m_data[m_pos++ ] : -1;
+		return (m_pos < m_size) ? m_data[m_pos++] : -1;
 	}
 
 	uint8_t read8()
@@ -60,7 +58,7 @@ public:
 
 	uint8_t readS(char* buf, uint8_t len)
 	{
-		if (m_pos + len > m_size)
+		if(m_pos + len > m_size)
 			len = m_size - m_pos;
 		memcpy(buf, &m_data[m_pos], len);
 		m_pos += len;
@@ -89,7 +87,7 @@ public:
 
 	size_t seek(size_t newPos)
 	{
-		if (newPos > m_size)
+		if(newPos > m_size)
 			m_pos = m_size;
 		else
 			m_pos = newPos;
@@ -98,7 +96,7 @@ public:
 
 	uint8_t write(char c)
 	{
-		m_data[m_pos++ ] = c;
+		m_data[m_pos++] = c;
 		return 1;
 	}
 
@@ -120,7 +118,7 @@ public:
 	size_t writeS(const char* str)
 	{
 		size_t len = strlen(str);
-		m_data[m_pos++ ] = len;
+		m_data[m_pos++] = len;
 		memcpy(&m_data[m_pos], str, len);
 		m_pos += len;
 		return 1 + len;
@@ -154,7 +152,6 @@ private:
 	size_t m_size;
 	size_t m_pos;
 	bool m_owned;
-
 };
 
-#endif 	// __MEMORY_STREAM_H
+#endif // __MEMORY_STREAM_H

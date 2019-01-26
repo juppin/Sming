@@ -323,7 +323,6 @@ endif
 ifeq ($(DISABLE_SPIFFS), 1)
 	CFLAGS += -DDISABLE_SPIFFS=1
 endif
-CFLAGS += -DSPIFFS_OBJ_META_LEN=16
 
 # linker flags used to generate the main object file
 LDFLAGS		= -nostdlib -u call_user_start -u custom_crash_callback -Wl,-static -Wl,--gc-sections -Wl,-Map=$(FW_BASE)/firmware.map -Wl,-wrap,system_restart_local 

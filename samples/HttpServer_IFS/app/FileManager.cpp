@@ -6,14 +6,10 @@
  */
 
 #include <status.h>
-#include "IFS/HybridFileSystem.h"
-#include "IFS/IFSFlashMedia.h"
-#include "IFS/FWObjectStore.h"
-#include "../Services/SpifFS/spiffs_sming.h"
 #include "FileManager.h"
 
-// For testing
-#define FWFS_ONLY
+// Enable this to use hybrid filesystem. Defaults to FWFS (firmware filesystem, read-only)
+#define FWFS_HYBRID
 
 DEFINE_FSTR(ATTR_ACCESS, "access")
 
@@ -41,9 +37,6 @@ static DEFINE_FSTR(ATTR_FREE_SPACE, "freespace");
 static DEFINE_FSTR(COMMAND_CHECK, "check");
 // FORMAT
 static DEFINE_FSTR(COMMAND_FORMAT, "format");
-
-// This is DWORD aligned so we can access it directly
-extern const uint8_t __fwfiles_data[] PROGMEM;
 
 #define UPLOAD_TIMEOUT_MS 2000
 
@@ -214,27 +207,21 @@ bool FileManager::init(const void* fwfsImageData)
 	auto freeheap = system_get_free_heap_size();
 	debug_i("1: heap = %u", freeheap);
 
-	auto fwMedia = new IFSFlashMedia(fwfsImageData, eFMA_ReadOnly);
-	debug_i("2: heap = -%u", freeheap - system_get_free_heap_size());
-	auto store = new FWObjectStore(fwMedia);
-	debug_i("3: heap = -%u", freeheap - system_get_free_heap_size());
-#ifdef FWFS_ONLY
-	auto fs = new FirmwareFileSystem(store);
+	IFileSystem* fs;
+#ifdef FWFS_HYBRID
+	fs = CreateHybridFilesystem(fwfsImageData);
 #else
-	auto cfg = spiffs_get_storage_config();
-	auto ffsMedia = new IFSFlashMedia(cfg.phys_addr, cfg.phys_size, eFMA_ReadWrite);
-	debug_i("4: heap = -%u", freeheap - system_get_free_heap_size());
-	auto fs = new HybridFileSystem(store, ffsMedia);
+	fs = CreateFirmwareFilesystem(fwfsImageData);
 #endif
+	debug_i("2: heap = -%u", freeheap - system_get_free_heap_size());
 
-	debug_i("5: heap = -%u", freeheap - system_get_free_heap_size());
-	if(!fs) {
+	if(fs == nullptr) {
+		debug_e("Failed to created filesystem object");
 		return false;
 	}
 
 	int res = fs->mount();
-
-	debug_i("6: heap = -%u", freeheap - system_get_free_heap_size());
+	debug_i("3: heap = -%u", freeheap - system_get_free_heap_size());
 
 	char buf[20];
 	fs->geterrortext(res, buf, sizeof(buf));

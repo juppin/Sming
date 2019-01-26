@@ -25,6 +25,7 @@
 #define _SMING_CORE_FILESYSTEM_H_
 
 #include "IFS/IFS.h"
+#include "../Services/IFS/ifshelp.h"
 
 // @deprecated
 #include "../Services/SpifFS/spiffs_sming.h"
