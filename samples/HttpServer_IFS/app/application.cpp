@@ -187,7 +187,7 @@ void init()
 {
 	// Configure serial port
 #if DEBUG_BUILD
-//	Serial.setPort(UART_ID_1);
+	//	Serial.setPort(UART_ID_1);
 	Serial.setTxBufferSize(4096);
 	Serial.setRxBufferSize(0);
 	//  Serial.setTxWait(false);
